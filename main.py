@@ -28,7 +28,7 @@ def fetch_api_jobs(role):
     }
 
     headers = {
-        "X-RapidAPI-Key": 083ab6f14cmshe7666f791b52a5bp1b335ejsn95c3333c490
+        "X-RapidAPI-Key": "083ab6f14cmshe7666f791b52a5bp1b335ejsn95c3333c490"
     }
 
     res = requests.get(url, headers=headers, params=params).json()
