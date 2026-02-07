@@ -38,8 +38,13 @@ def fetch_api_jobs(role):
     for job in res.get("data", []):
 
         country = job.get("job_country", "")
-        if "india" not in country.lower():
-            continue   # INDIA ONLY
+        city = job.get("job_city", "").lower()
+        state = job.get("job_state", "").lower()
+        country = job.get("job_country", "").lower()
+
+        if not any(x in (city + state + country) for x in ["india", "bangalore", "chennai", "hyderabad", "pune", "mumbai", "delhi"]):
+         continue
+
 
         title = job.get("job_title", "N/A")
         company = job.get("employer_name", "N/A")
