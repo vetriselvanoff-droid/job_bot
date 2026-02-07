@@ -135,7 +135,7 @@ if __name__ == "__main__":
 
 if not jobs:
         send_message("⚠️ No jobs found today. API returned empty.")
-    else:
+else:
         for job_post in jobs[:10]:
             send_message(job_post)
 import time
