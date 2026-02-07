@@ -28,22 +28,46 @@ def fetch_api_jobs(role):
     }
 
     headers = {
-        "X-RapidAPI-Key": "083ab6f14cmshe7666f791b52a5bp1b335ejsn95c3333c490"
+        "X-RapidAPI-Key": RAPID_API_KEY
     }
 
     res = requests.get(url, headers=headers, params=params).json()
 
-    jobs = []
+    posts = []
 
-    for job in res.get("data", [])[:5]:
-        title = job["job_title"]
-        company = job["employer_name"]
-        city = job["job_city"]
-        link = job["job_apply_link"]
+    for job in res.get("data", []):
 
-        jobs.append((f"{title} – {company} – {city}", link))
+        country = job.get("job_country", "")
+        if "india" not in country.lower():
+            continue   # INDIA ONLY
 
-    return jobs
+        title = job.get("job_title", "N/A")
+        company = job.get("employer_name", "N/A")
+
+        city = job.get("job_city", "")
+        state = job.get("job_state", "")
+        location = f"{city}, {state}"
+
+        remote = "Remote" if job.get("job_is_remote") else "Onsite"
+        job_type = job.get("job_employment_type", "Full-time")
+
+        desc = job.get("job_description", "")
+        desc = desc[:300] + "..." if len(desc) > 300 else desc
+
+        link = job.get("job_apply_link", "")
+
+        message = (
+            f"💼 {title}\n\n"
+            f"🏢 Company: {company}\n"
+            f"📍 Location: {location}\n"
+            f"🕒 Type: {job_type} | {remote}\n\n"
+            f"📝 Details:\n{desc}\n\n"
+            f"🔗 Apply:\n{link}"
+        )
+
+        posts.append(message)
+
+    return posts
 
 
 # -------------------------
@@ -74,17 +98,13 @@ def get_all_jobs():
         "fresher software engineer india"
     ]
 
-    all_jobs = []
+    all_posts = []
 
-    # API jobs
     for role in roles:
-        all_jobs += fetch_api_jobs(role)
+        all_posts += fetch_api_jobs(role)
 
-    # RSS jobs (backup)
-    all_jobs += fetch_rss("https://www.python.org/jobs/feed/rss/")
-    all_jobs += fetch_rss("https://weworkremotely.com/remote-jobs.rss")
+    return all_posts
 
-    return all_jobs
 
 
 # -------------------------
@@ -107,6 +127,12 @@ def format_jobs(jobs):
 # -------------------------
 if __name__ == "__main__":
     jobs = get_all_jobs()
-    message = format_jobs(jobs)
-    send_message(message)
+import time
+
+jobs = get_all_jobs()
+
+for job_post in jobs[:10]:   # send 10 jobs max daily
+    send_message(job_post)
+    time.sleep(3)
+
 
