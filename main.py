@@ -132,6 +132,12 @@ def format_jobs(jobs):
 # -------------------------
 if __name__ == "__main__":
     jobs = get_all_jobs()
+
+if not jobs:
+        send_message("⚠️ No jobs found today. API returned empty.")
+    else:
+        for job_post in jobs[:10]:
+            send_message(job_post)
 import time
 
 jobs = get_all_jobs()
@@ -139,5 +145,8 @@ jobs = get_all_jobs()
 for job_post in jobs[:10]:   # send 10 jobs max daily
     send_message(job_post)
     time.sleep(3)
+
+
+
 
 
